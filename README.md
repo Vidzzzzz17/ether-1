@@ -9,7 +9,7 @@ Ether 1 is a multimodal assistant shell that connects a hosted Next.js workspace
 - Supabase: user accounts, Postgres persistence and private media storage.
 - Model runtime: Ollama on the user's computer. The API's OpenAI-compatible text adapter points at Ollama; speech and image adapters can point at local services too.
 
-Vercel hosts the web app. Do not deploy the local runtime as a public inference service: in local mode it has no user authentication and is intended to listen only on the user's own computer. The hosted browser UI can call that local runtime by setting `NEXT_PUBLIC_API_URL` to `http://127.0.0.1:8000` in its build environment; browsers may ask the user to allow local network access. Supabase remains optional until a dedicated project is selected. The current web app needs Supabase to enable sign-in and saved chat history.
+Vercel hosts the web app. Do not deploy the local runtime as a public inference service: in local mode it has no user authentication and is intended to listen only on the user's own computer. The hosted browser UI can call that local runtime by setting `NEXT_PUBLIC_API_URL` to `http://127.0.0.1:8000` in its build environment; browsers may ask the user to allow local network access. Without Supabase, chat history is stored in that browser only. Supabase is optional and adds sign-in and cloud-saved history.
 
 ## 1. Supabase setup
 
