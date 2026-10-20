@@ -4,6 +4,9 @@ from .config import get_settings
 
 async def require_user(authorization: str | None) -> dict:
     settings = get_settings()
+    # Explicit opt-in for a user's own machine. Never use this mode on a public server.
+    if settings.auth_mode.lower() == "local":
+        return {"id": "local-user", "is_local": True}
     if not authorization or not authorization.lower().startswith("bearer "):
         raise HTTPException(status_code=401, detail="Sign in to use chat.")
     if not settings.supabase_url or not settings.supabase_anon_key:
