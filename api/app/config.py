@@ -4,6 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     app_env: str = "development"
     cors_origins: str = "http://localhost:3000"
+    auth_mode: str = "supabase"
     supabase_url: str = ""
     supabase_anon_key: str = ""
     llm_base_url: str = "http://localhost:11434/v1"
