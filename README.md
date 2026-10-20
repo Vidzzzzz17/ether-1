@@ -17,19 +17,27 @@ Create a Supabase project. In SQL Editor, run `supabase/schema.sql`. Create a pr
 
 ## 2. Local setup
 
-Copy `web/.env.example` to `web/.env.local` and `api/.env.example` to `api/.env`. Install Ollama on the computer that will run Ether 1 and download `qwen2.5:7b` (about 4.7 GB in Ollama's library). Qwen2.5-7B-Instruct is Apache-2.0 licensed; users should review model and dependency licenses before redistributing weights. Set `LLM_BASE_URL=http://localhost:11434/v1`, `LLM_API_KEY=ollama`, and `LLM_MODEL=qwen2.5:7b`.
+Copy `web/.env.example` to `web/.env.local` and `api/.env.example` to `api/.env`. Install Ollama on the computer that will run Ether 1, then download the models you want to use:
+
+```sh
+ollama pull qwen2.5:7b
+ollama pull qwen2.5-coder:7b
+ollama pull qwen2.5vl:7b
+```
+
+The workspace model picker offers the general chat model, a code specialist, and a vision-language model. Ollama lists these as separate models, and the vision model accepts image input. The model picker shows which of them Ollama reports as installed. Set `LLM_BASE_URL=http://localhost:11434/v1`, `LLM_API_KEY=ollama`, `LLM_MODEL=qwen2.5:7b`, and `LLM_MODELS=qwen2.5:7b,qwen2.5-coder:7b,qwen2.5vl:7b`. Qwen2.5-7B-Instruct is Apache-2.0 licensed; review the license for every model and dependency before redistribution.
 
 For a personal-only local run, set `AUTH_MODE=local` in `api/.env`. Keep the API bound to `127.0.0.1`; do not expose this mode to a network or the public internet. Set `CORS_ORIGINS` to the exact origin of the web UI (for local development, `http://localhost:3000`; for the hosted Ether 1 site, its Vercel domain). Set `NEXT_PUBLIC_API_URL=http://127.0.0.1:8000` for the web build that should use the user's local runtime.
 
 Run the API from `api/` with `python -m venv .venv`, activate it, install `pip install -e .`, then `uvicorn app.main:app --reload --port 8000`. In `web/`, run `npm install` and `npm run dev`. Open `http://localhost:3000`.
 
-For local audio transcription, install the optional `audio` extra and configure `WHISPER_MODEL=base`. To understand uploaded images, point `LLM_BASE_URL` to a vision-capable model such as a Qwen-VL variant served through a compatible API. Image generation and TTS are HTTP adapters: configure their endpoint URLs to a compatible service. See `api/.env.example` for configuration. The TTS adapter expects a JSON response containing a browser-accessible `url`.
+For local audio transcription, install the optional `audio` extra and set `WHISPER_MODEL=base`, `small`, or another faster-whisper model size. For speech output, the adapter can connect to a local Kokoro or Piper service that returns a browser-accessible audio `url`. For image generation, connect a local OpenAI-compatible image endpoint; FLUX.1-schnell is one Apache-2.0 option, but it requires a separate image runtime and suitable GPU. These speech and image providers are adapters, not selectable models in the chat picker yet. See `api/.env.example` for endpoint settings.
 
 ## 3. Deploy to Vercel
 
 Import this directory as a Vercel project and set the root directory to `web`. Add all `NEXT_PUBLIC_*` Supabase variables and `NEXT_PUBLIC_API_URL` (the deployed API URL). Deploy `api/` as a second Vercel project rooted at this directory, or use a Vercel Services setup if available to your account. Configure the API environment variables from `api/.env.example`, set `CORS_ORIGINS` to the web deployment origin, and set the web `NEXT_PUBLIC_API_URL` to the API deployment URL. For a single Vercel project, the FastAPI entry point is `api/index.py`; adapt project routing to your Vercel project layout.
 
-The hosted API deployment is only useful for inference if configured to reach a separately operated runtime. For the intended user-owned-computer setup, run the API locally instead. Audio transcription and image generation require their own local provider services; the text model is the only local provider configured by default. Do not send sensitive files to a hosted provider unless the user has explicitly chosen that provider.
+The hosted API deployment is only useful for inference if configured to reach a separately operated runtime. For the intended user-owned-computer setup, run the API locally instead. Voice and image generation require their own local provider services; the text model picker is the first selectable local model family. Do not send sensitive files to a hosted provider unless the user has explicitly chosen that provider.
 
 ## 4. API
 
