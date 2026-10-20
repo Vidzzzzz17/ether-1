@@ -15,4 +15,5 @@ class ChatResponse(BaseModel):
     reply: str
     artifacts: list[Artifact] = Field(default_factory=list)
     intent: Intent
+    route: list[str] = Field(default_factory=list)
 
