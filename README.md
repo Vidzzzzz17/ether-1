@@ -1,15 +1,15 @@
 # Ether 1 — Multimodal Assistant Platform
 
-Ether 1 coordinates open-source language, speech, vision, and image models behind one authenticated assistant. This repository contains a FastAPI API, Next.js app, Supabase persistence, and modular model adapters.
+Ether 1 is a multimodal assistant shell that connects a hosted Next.js workspace to model services running on the user's own computer. This repository contains a FastAPI local runtime, Next.js app, optional Supabase persistence, and modular model adapters.
 
 ## Architecture
 
 - `web/`: Next.js App Router UI, Supabase Auth, chat history and editable Co-work Canvas.
 - `api/`: FastAPI `/api/v1/chat`, auth validation, orchestration, and model adapters.
 - Supabase: user accounts, Postgres persistence and private media storage.
-- Model runtime: local Ollama for development, or any OpenAI-compatible endpoint for deployed inference. Speech and image services are configured independently.
+- Model runtime: Ollama on the user's computer. The API's OpenAI-compatible text adapter points at Ollama; speech and image adapters can point at local services too.
 
-Vercel hosts the web app and can run the FastAPI Python function. It does not provide free GPU inference for open model weights. Point the adapters at a separately hosted model runtime for deployment. The starter saves chat turns and artefact JSON; media uploads use Supabase Storage.
+Vercel hosts the web app. Do not deploy the local runtime as a public inference service: in local mode it has no user authentication and is intended to listen only on the user's own computer. The hosted browser UI can call that local runtime by setting `NEXT_PUBLIC_API_URL` to `http://127.0.0.1:8000` in its build environment; browsers may ask the user to allow local network access. Supabase remains optional until a dedicated project is selected. The current web app needs Supabase to enable sign-in and saved chat history.
 
 ## 1. Supabase setup
 
@@ -17,7 +17,9 @@ Create a Supabase project. In SQL Editor, run `supabase/schema.sql`. Create a pr
 
 ## 2. Local setup
 
-Copy `web/.env.example` to `web/.env.local` and `api/.env.example` to `api/.env`. For a local LLM, install Ollama and pull a model such as `qwen2.5:7b`; set `LLM_BASE_URL=http://localhost:11434/v1` and `LLM_API_KEY=ollama`. Set `LLM_MODEL` to the pulled model name.
+Copy `web/.env.example` to `web/.env.local` and `api/.env.example` to `api/.env`. Install Ollama on the computer that will run Ether 1 and download `qwen2.5:7b` (about 4.7 GB in Ollama's library). Qwen2.5-7B-Instruct is Apache-2.0 licensed; users should review model and dependency licenses before redistributing weights. Set `LLM_BASE_URL=http://localhost:11434/v1`, `LLM_API_KEY=ollama`, and `LLM_MODEL=qwen2.5:7b`.
+
+For a personal-only local run, set `AUTH_MODE=local` in `api/.env`. Keep the API bound to `127.0.0.1`; do not expose this mode to a network or the public internet. Set `CORS_ORIGINS` to the exact origin of the web UI (for local development, `http://localhost:3000`; for the hosted Ether 1 site, its Vercel domain). Set `NEXT_PUBLIC_API_URL=http://127.0.0.1:8000` for the web build that should use the user's local runtime.
 
 Run the API from `api/` with `python -m venv .venv`, activate it, install `pip install -e .`, then `uvicorn app.main:app --reload --port 8000`. In `web/`, run `npm install` and `npm run dev`. Open `http://localhost:3000`.
 
@@ -27,7 +29,7 @@ For local audio transcription, install the optional `audio` extra and configure 
 
 Import this directory as a Vercel project and set the root directory to `web`. Add all `NEXT_PUBLIC_*` Supabase variables and `NEXT_PUBLIC_API_URL` (the deployed API URL). Deploy `api/` as a second Vercel project rooted at this directory, or use a Vercel Services setup if available to your account. Configure the API environment variables from `api/.env.example`, set `CORS_ORIGINS` to the web deployment origin, and set the web `NEXT_PUBLIC_API_URL` to the API deployment URL. For a single Vercel project, the FastAPI entry point is `api/index.py`; adapt project routing to your Vercel project layout.
 
-For production, run inference on a GPU-capable host or a managed endpoint. Keep all model credentials server-side. Add rate limits, upload quotas, observability, and a retention policy before opening the service to public traffic.
+The hosted API deployment is only useful for inference if configured to reach a separately operated runtime. For the intended user-owned-computer setup, run the API locally instead. Audio transcription and image generation require their own local provider services; the text model is the only local provider configured by default. Do not send sensitive files to a hosted provider unless the user has explicitly chosen that provider.
 
 ## 4. API
 
