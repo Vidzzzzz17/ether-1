@@ -5,7 +5,7 @@ from ..schemas import Artifact
 
 SYSTEM = "You are a helpful multimodal assistant. Answer clearly. If useful, create editable side-panel artefacts. Return ONLY valid JSON with keys reply (string) and artifacts (array). Each artifact has type (text|code|document), title, content, and optional language. Do not wrap JSON in markdown fences."
 
-async def generate_text(prompt: str, history: list[dict] | None = None, image: tuple[bytes, str] | None = None) -> tuple[str, list[Artifact]]:
+async def generate_text(prompt: str, history: list[dict] | None = None, image: tuple[bytes, str] | None = None, model: str | None = None) -> tuple[str, list[Artifact]]:
     settings = get_settings()
     messages = [{"role": "system", "content": SYSTEM}]
     for item in (history or [])[-12:]:
@@ -17,7 +17,7 @@ async def generate_text(prompt: str, history: list[dict] | None = None, image: t
     messages.append({"role":"user","content":user_content})
     try:
         async with httpx.AsyncClient(timeout=90) as client:
-            response = await client.post(settings.llm_base_url.rstrip("/")+"/chat/completions", headers={"Authorization":f"Bearer {settings.llm_api_key}"}, json={"model":settings.llm_model,"messages":messages,"temperature":0.4})
+            response = await client.post(settings.llm_base_url.rstrip("/")+"/chat/completions", headers={"Authorization":f"Bearer {settings.llm_api_key}"}, json={"model":model or settings.llm_model,"messages":messages,"temperature":0.4})
             response.raise_for_status(); raw=response.json()["choices"][0]["message"]["content"]
     except (httpx.HTTPError,KeyError,IndexError,ValueError) as exc: raise RuntimeError("Text model request failed. Check the configured OpenAI-compatible endpoint.") from exc
     try:
