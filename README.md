@@ -1,6 +1,6 @@
-# Multimodal Assistant Starter
+# Ether 1 — Multimodal Assistant Platform
 
-FastAPI + Next.js starter for authenticated chat with editable text/code artefacts and pluggable speech, image, and language models.
+Ether 1 coordinates open-source language, speech, vision, and image models behind one authenticated assistant. This repository contains a FastAPI API, Next.js app, Supabase persistence, and modular model adapters.
 
 ## Architecture
 

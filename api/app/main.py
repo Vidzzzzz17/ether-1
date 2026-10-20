@@ -6,7 +6,7 @@ from .config import get_settings
 from .orchestrator import detect_intent, handle_chat
 from .schemas import ChatResponse
 
-settings=get_settings();app=FastAPI(title="Multimodal Assistant API",version="0.1.0")
+settings=get_settings();app=FastAPI(title="Ether 1 API",version="0.1.0")
 app.add_middleware(CORSMiddleware,allow_origins=settings.allowed_origins,allow_credentials=True,allow_methods=["GET","POST","OPTIONS"],allow_headers=["Authorization","Content-Type"])
 
 @app.get("/api/health")
