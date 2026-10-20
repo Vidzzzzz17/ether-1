@@ -1,0 +1,10 @@
+.env
+.env.local
+.venv/
+__pycache__/
+*.py[cod]
+node_modules/
+.npm-cache/
+.next/
+dist/
+

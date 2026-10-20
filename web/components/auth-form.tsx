@@ -1,0 +1,10 @@
+"use client";
+import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { Sparkles } from "lucide-react";
+export function AuthForm() {
+  const [email, setEmail] = useState(""); const [password, setPassword] = useState(""); const [mode, setMode] = useState<"in"|"up">("in"); const [note, setNote] = useState(""); const [busy, setBusy] = useState(false);
+  async function submit(e: React.FormEvent) { e.preventDefault(); setBusy(true); setNote(""); const db = createClient(); const result = mode === "in" ? await db.auth.signInWithPassword({ email, password }) : await db.auth.signUp({ email, password }); setBusy(false); if (result.error) setNote(result.error.message); else if (mode === "up") setNote("Check your email to confirm your account."); else location.assign("/"); }
+  return <section className="auth-card"><div className="brand-mark"><Sparkles size={20}/></div><p className="eyebrow">YOUR CREATIVE WORKSPACE</p><h1>{mode === "in" ? "Welcome back" : "Create your account"}</h1><p className="muted">Chat, make, and refine ideas in one place.</p><form onSubmit={submit}><label>Email<input type="email" required value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com"/></label><label>Password<input type="password" required minLength={8} value={password} onChange={e=>setPassword(e.target.value)} placeholder="At least 8 characters"/></label><button className="primary full" disabled={busy}>{busy?"Please wait…":mode === "in"?"Sign in":"Create account"}</button></form>{note&&<p className="form-note">{note}</p>}<button className="text-button" onClick={()=>{setMode(mode==="in"?"up":"in");setNote("")}}>{mode==="in"?"New here? Create an account":"Already have an account? Sign in"}</button></section>;
+}
+
