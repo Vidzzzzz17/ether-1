@@ -3,4 +3,5 @@
 @media(max-width:900px){.app-shell{grid-template-columns:54px minmax(0,1fr)}.canvas-column{display:none}.chat-header{padding:0 20px}.messages{padding-left:7%;padding-right:7%}.composer{margin-left:5%;margin-right:5%}}
 @media(max-width:520px){.app-shell{grid-template-columns:0 minmax(0,1fr)}.rail{display:none}.chat-header{height:68px;padding:0 16px}.history-strip{padding-left:14px;padding-right:14px}.messages{padding:16px 5% 20px}.welcome h2{font-size:27px}.composer{margin:0 12px}.fine-print{margin-bottom:8px}.suggestions{margin-top:23px}.mode-button{font-size:8px;padding:0 6px}}
 .model-select{height:28px;max-width:125px;border:1px solid #e7e8e1;border-radius:8px;background:#fff;color:#68705f;font-size:8px;padding:0 6px;outline:0}.model-select:focus{border-color:#aeb7a4}
+.route-trace{margin-top:9px;color:#92948b;font-size:9px;line-height:1.55;letter-spacing:.01em}
 
